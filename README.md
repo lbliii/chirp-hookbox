@@ -42,9 +42,10 @@ curl -X POST http://127.0.0.1:8000/in/hookbox-local-ingress \
 
 ## Deploy on Railway
 
-Inspect the [live demo](https://web-production-caa61.up.railway.app/). The
-marketplace template remains a draft until Railway's generated-secret defaults
-are confirmed in the template editor.
+Inspect the [live demo](https://web-production-caa61.up.railway.app/) or
+[deploy Chirp Hookbox from Railway](https://railway.com/deploy/chirp-hookbox).
+The marketplace template supplies generated secrets and PostgreSQL defaults, so
+deployment requires no variable input.
 
 The Railway template intentionally creates only:
 
