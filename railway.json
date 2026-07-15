@@ -1,0 +1,12 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {"builder": "RAILPACK"},
+  "deploy": {
+    "preDeployCommand": "chirp migrate --db \"$DATABASE_URL\" --migrations-dir migrations",
+    "startCommand": "python app.py",
+    "healthcheckPath": "/ready",
+    "healthcheckTimeout": 100,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}

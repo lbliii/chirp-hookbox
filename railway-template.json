@@ -1,0 +1,58 @@
+{
+  "$schema": "https://raw.githubusercontent.com/lbliii/chirp-railway-catalog/main/schema/template-manifest.schema.json",
+  "schema_version": 1,
+  "template": {
+    "slug": "chirp-hookbox",
+    "title": "Webhook Inbox & Request Bin — Chirp + PostgreSQL",
+    "repository": "https://github.com/lbliii/chirp-hookbox",
+    "ref": "v0.1.0",
+    "python": "3.14",
+    "chirp_spec": ">=0.10,<0.11",
+    "chirp_locked": "0.10.2",
+    "start_command": "python app.py",
+    "health_path": "/ready",
+    "owner": "lbliii",
+    "support_url": "https://github.com/lbliii/chirp-hookbox/issues",
+    "status": "draft",
+    "public_url": null,
+    "demo_url": null,
+    "last_successful_smoke": null,
+    "services": ["web", "postgres"],
+    "variables": [
+      {"name": "PORT", "source": "railway", "secret": false},
+      {"name": "DATABASE_URL", "source": "railway", "secret": true},
+      {"name": "CHIRP_ENV", "source": "template", "secret": false},
+      {"name": "CHIRP_SECRET_KEY", "source": "template", "secret": true},
+      {"name": "HOOKBOX_ADMIN_TOKEN", "source": "template", "secret": true},
+      {"name": "HOOKBOX_INGRESS_TOKEN", "source": "template", "secret": true},
+      {"name": "CHIRP_SKIP_MIGRATIONS", "source": "template", "secret": false}
+    ]
+  },
+  "required_categories": ["asset", "full-page", "health", "readiness", "sse"],
+  "required_operations": ["deployment", "ejection", "restart", "rollback", "shutdown", "update"],
+  "checks": [
+    {
+      "id": "locked-full-page",
+      "category": "full-page",
+      "path": "/",
+      "contains": ["Chirp Hookbox", "Catch the signal", "Unlock your inbox"]
+    },
+    {
+      "id": "asset-css",
+      "category": "asset",
+      "path": "/styles.css",
+      "headers": {"content-type": "text/css"},
+      "contains": ["--violet:"]
+    },
+    {
+      "id": "locked-sse",
+      "category": "sse",
+      "path": "/events",
+      "status": 401,
+      "contains": ["Unlock the inbox"]
+    },
+    {"id": "health", "category": "health", "path": "/health"},
+    {"id": "readiness", "category": "readiness", "path": "/ready"},
+    {"id": "readiness-head", "category": "readiness", "method": "HEAD", "path": "/ready"}
+  ]
+}

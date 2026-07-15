@@ -1,0 +1,8 @@
+# Changelog
+
+## 0.1.0 — 2026-07-15
+
+- Ship the first Chirp Hookbox webhook inbox with PostgreSQL persistence.
+- Mask credential-shaped headers before storage and bound request bodies to 128 KiB.
+- Add live SSE arrivals, reconnect replay, search, detail inspection, retention, deletion, and cURL replay.
+- Add Railway deployment, migration, readiness, and catalog conformance metadata.

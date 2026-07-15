@@ -1,0 +1,144 @@
+{% extends "chirp/layouts/shell.html" %}
+
+{% block title %}Chirp Hookbox · See every webhook arrive{% end %}
+
+{% block head %}
+<link rel="stylesheet" href="/styles.css">
+<script src="/app.js" defer></script>
+{% end %}
+
+{% block content %}
+{% block page_root %}
+<main class="shell">
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Chirp Hookbox home"><span aria-hidden="true">↯</span> Chirp Hookbox</a>
+    <span class="powered">Live webhook inspection · powered by Chirp</span>
+  </header>
+
+  {% if admin %}
+  <section class="hero hero-unlocked">
+    <div>
+      <p class="eyebrow">Your request bin is listening</p>
+      <h1>See every webhook<br><em>the moment it lands.</em></h1>
+      <p class="lede">Send POST, PUT, or PATCH requests to the private ingress URL. Hookbox masks credential-shaped headers before persistence.</p>
+    </div>
+    {% block stats %}
+    <aside id="stats" class="stats">
+      <strong id="capture-count">{{ capture_count }}</strong>
+      <span>captured requests</span>
+      <span class="live"><i></i> Live</span>
+    </aside>
+    {% end %}
+  </section>
+
+  <section class="ingress-card" aria-labelledby="ingress-title">
+    <div>
+      <p class="section-kicker">Private ingress URL</p>
+      <h2 id="ingress-title">Point your webhook here</h2>
+    </div>
+    <code>{{ ingress_path }}</code>
+    <p>Append this path to the generated Railway domain. Keep it secret: it is the write credential for this inbox.</p>
+  </section>
+
+  {% block dashboard %}
+  <section id="dashboard" class="dashboard" aria-labelledby="inbox-title">
+    <div class="dashboard-heading">
+      <div><p class="section-kicker">Live inbox</p><h2 id="inbox-title">Recent requests</h2></div>
+      <form class="search" action="/" method="get" hx-get="/" hx-target="#dashboard" hx-swap="outerHTML">
+        <label class="sr-only" for="q">Search captures</label>
+        <input id="q" name="q" value="{{ q }}" placeholder="Search method, path, header, or body">
+        <button type="submit">Search</button>
+      </form>
+    </div>
+
+    <div id="captures" class="captures">
+      {% for capture in captures %}
+      <article id="capture-{{ capture.id }}" class="capture-row">
+        <a href="/captures/{{ capture.id }}" class="capture-link">
+          <span class="method method-{{ capture.method | lower }}">{{ capture.method }}</span>
+          <span class="capture-main"><strong>{{ capture.path }}</strong><small>{{ capture.content_type }} · {{ capture.body_bytes }} bytes</small></span>
+          <time>{{ capture.created_at }}</time>
+          <span aria-hidden="true">↗</span>
+        </a>
+        <form action="/admin/captures/{{ capture.id }}/delete" method="post" hx-post="/admin/captures/{{ capture.id }}/delete" hx-target="#dashboard" hx-swap="outerHTML">
+          {{ csrf_field() }}<button class="delete" type="submit">Delete</button>
+        </form>
+      </article>
+      {% else %}
+      <div class="empty"><span aria-hidden="true">◎</span><h3>No requests yet</h3><p>Send a webhook to the ingress URL and it will appear here live.</p></div>
+      {% endfor %}
+    </div>
+
+    <div class="settings-row">
+      <form action="/admin/retention" method="post" hx-post="/admin/retention" hx-target="#dashboard" hx-swap="outerHTML">
+        {{ csrf_field() }}
+        <label for="days">Delete captures older than</label>
+        <input id="days" name="days" type="number" min="1" max="90" value="{{ retention_days }}">
+        <span>days</span><button type="submit">Save retention</button>
+      </form>
+      <form action="/admin/logout" method="post" hx-post="/admin/logout" hx-target="#dashboard" hx-swap="outerHTML">
+        {{ csrf_field() }}<button type="submit">Lock inbox</button>
+      </form>
+    </div>
+
+    <div id="live-stream" hx-ext="sse" sse-connect="/events" hx-disinherit="hx-target hx-swap" aria-hidden="true">
+      <span sse-swap="message" hx-swap="none"></span>
+    </div>
+  </section>
+  {% end %}
+
+  {% else %}
+  <section class="hero locked">
+    <div>
+      <p class="eyebrow">A private window into your webhooks</p>
+      <h1>Catch the signal.<br><em>Inspect the details.</em></h1>
+      <p class="lede">A focused, self-hosted request bin with safe body inspection, masked secrets, and live arrivals.</p>
+    </div>
+    <form class="unlock" action="/admin/login" method="post" hx-post="/admin/login" hx-target="body" hx-swap="innerHTML">
+      {{ csrf_field() }}
+      <p class="section-kicker">Administrator access</p>
+      <h2>Unlock your inbox</h2>
+      <label for="token">Generated administrator token</label>
+      <input id="token" name="token" type="password" required autocomplete="current-password" placeholder="Paste HOOKBOX_ADMIN_TOKEN">
+      <button type="submit">Open Hookbox <span aria-hidden="true">↗</span></button>
+      <p>The token is stored in your Railway service variables.</p>
+    </form>
+  </section>
+  {% end %}
+
+  {% block notice %}<p id="notice" class="notice" aria-live="polite">{{ notice }}</p>{% end %}
+
+  <footer><span>PostgreSQL persistence · credential-shaped headers masked before storage</span><a href="https://lbliii.github.io/chirp/">Built with Chirp ↗</a></footer>
+</main>
+{% end %}
+
+{% block detail_page %}
+{% if (capture ?? none) %}
+<main class="shell detail-page">
+  <header class="topbar"><a class="brand" href="/"><span aria-hidden="true">←</span> Back to inbox</a><span class="powered">Chirp Hookbox</span></header>
+  {% block detail %}
+  <article class="detail-card">
+    <header class="detail-header"><span class="method method-{{ capture.method | lower }}">{{ capture.method }}</span><div><h1>{{ capture.path }}</h1><p>{{ capture.created_at }} · {{ capture.source_ip }}</p></div></header>
+    <dl class="facts"><div><dt>Content type</dt><dd>{{ capture.content_type }}</dd></div><div><dt>Body</dt><dd>{{ capture.body_kind }} · {{ capture.body_bytes }} bytes</dd></div></dl>
+
+    <section><h2>Query parameters</h2><pre>{% for name, values in query.items() %}{{ name }}: {{ values }}
+{% else %}No query parameters{% endfor %}</pre></section>
+    <section><h2>Headers</h2><pre>{% for name, value in headers.items() %}{{ name }}: {{ value }}
+{% endfor %}</pre><p class="safe-note">Authorization, cookie, token, key, signature, secret, and credential-shaped headers are irreversibly masked before storage.</p></section>
+    <section><h2>Body</h2><pre class="body-preview">{{ capture.body_text or "Empty request body" }}</pre></section>
+    <section><div class="section-title"><h2>Replay as cURL</h2><button type="button" data-copy-target="replay-command">Copy</button></div><pre id="replay-command">{{ replay_curl }}</pre><p>Replace <code>https://example.com</code> with the destination. Masked credentials are intentionally omitted.</p></section>
+  </article>
+  {% end %}
+</main>
+{% end %}
+{% end %}
+
+{% block live_update %}
+{% if (capture ?? none) %}
+<article id="capture-{{ capture.id }}" class="capture-row" hx-swap-oob="afterbegin:#captures">
+  <a href="/captures/{{ capture.id }}" class="capture-link"><span class="method method-{{ capture.method | lower }}">{{ capture.method }}</span><span class="capture-main"><strong>{{ capture.path }}</strong><small>{{ capture.content_type }} · {{ capture.body_bytes }} bytes</small></span><time>{{ capture.created_at }}</time><span aria-hidden="true">↗</span></a>
+</article>
+<strong id="capture-count" hx-swap-oob="innerHTML">{{ capture_count }}</strong>
+{% end %}
+{% end %}
+{% end %}
