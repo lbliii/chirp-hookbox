@@ -74,12 +74,24 @@ async def test_locked_page_health_readiness_and_assets(tmp_path: Path) -> None:
         health = await client.get("/health")
         ready = await client.get("/ready")
         css = await client.get("/styles.css")
+        favicon = await client.get("/favicon.svg")
         script = await client.get("/app.js")
 
-    assert page.status == health.status == ready.status == css.status == script.status == 200
+    assert (
+        page.status
+        == health.status
+        == ready.status
+        == css.status
+        == favicon.status
+        == script.status
+        == 200
+    )
     assert "Catch the signal" in page.text
     assert "test-ingress-token" not in page.text
+    assert '<link rel="icon" href="/favicon.svg" type="image/svg+xml">' in page.text
     assert "--violet:" in css.text
+    assert favicon.content_type == "image/svg+xml"
+    assert "Chirp Hookbox" in favicon.text
     assert "navigator.clipboard" in script.text
 
 
@@ -142,6 +154,7 @@ async def test_json_capture_masks_credentials_before_persistence(tmp_path: Path)
     assert "See every webhook" not in detail.text
     assert "Private ingress URL" not in detail.text
     assert 'id="dashboard"' not in detail.text
+    assert '<link rel="icon" href="/favicon.svg" type="image/svg+xml">' in detail.text
 
 
 @pytest.mark.parametrize(

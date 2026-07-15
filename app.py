@@ -458,6 +458,13 @@ def create_app(
             content_type="text/css; charset=utf-8",
         )
 
+    @application.route("/favicon.svg", referenced=True)
+    def favicon() -> Response:
+        return Response(
+            (ROOT / "favicon.svg").read_text(encoding="utf-8"),
+            content_type="image/svg+xml",
+        )
+
     @application.route("/app.js", referenced=True)
     def script() -> Response:
         return Response(

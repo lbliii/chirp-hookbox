@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3 — 2026-07-15
+
+- Add a product favicon to every full-page route and the Railway asset contract.
+
 ## 0.1.2 — 2026-07-15
 
 - Give capture inspection its own compact page so request details appear immediately without the inbox hero or ingress card.
