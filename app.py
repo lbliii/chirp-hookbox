@@ -391,12 +391,10 @@ def create_app(
         capture = await fetch_capture(capture_id)
         if capture is None:
             return Redirect("/")
-        current = await dashboard_context()
         return Page(
-            "index.html",
+            "detail.html",
             "detail",
             page_block_name="detail_page",
-            **current,
             capture=capture,
             headers=_json_object(capture.headers_json),
             query=_json_object(capture.query_json),

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2 — 2026-07-15
+
+- Give capture inspection its own compact page so request details appear immediately without the inbox hero or ingress card.
+
 ## 0.1.1 — 2026-07-15
 
 - Keep administrator unlock and lock navigation on the full-page redirect path so the ingress card and complete shell remain present.

@@ -1,0 +1,29 @@
+{% extends "chirp/layouts/shell.html" %}
+
+{% block title %}{{ capture.method }} {{ capture.path }} · Chirp Hookbox{% end %}
+
+{% block head %}
+<link rel="stylesheet" href="/styles.css">
+<script src="/app.js" defer></script>
+{% end %}
+
+{% block content %}
+{% block detail_page %}
+<main class="shell detail-page">
+  <header class="topbar"><a class="brand" href="/"><span aria-hidden="true">←</span> Back to inbox</a><span class="powered">Chirp Hookbox</span></header>
+  {% block detail %}
+  <article class="detail-card">
+    <header class="detail-header"><span class="method method-{{ capture.method | lower }}">{{ capture.method }}</span><div><h1>{{ capture.path }}</h1><p>{{ capture.created_at }} · {{ capture.source_ip }}</p></div></header>
+    <dl class="facts"><div><dt>Content type</dt><dd>{{ capture.content_type }}</dd></div><div><dt>Body</dt><dd>{{ capture.body_kind }} · {{ capture.body_bytes }} bytes</dd></div></dl>
+
+    <section><h2>Query parameters</h2><pre>{% for name, values in query.items() %}{{ name }}: {{ values }}
+{% else %}No query parameters{% endfor %}</pre></section>
+    <section><h2>Headers</h2><pre>{% for name, value in headers.items() %}{{ name }}: {{ value }}
+{% endfor %}</pre><p class="safe-note">Authorization, cookie, token, key, signature, secret, and credential-shaped headers are irreversibly masked before storage.</p></section>
+    <section><h2>Body</h2><pre class="body-preview">{{ capture.body_text or "Empty request body" }}</pre></section>
+    <section><div class="section-title"><h2>Replay as cURL</h2><button type="button" data-copy-target="replay-command">Copy</button></div><pre id="replay-command">{{ replay_curl }}</pre><p>Replace <code>https://example.com</code> with the destination. Masked credentials are intentionally omitted.</p></section>
+  </article>
+  {% end %}
+</main>
+{% end %}
+{% end %}

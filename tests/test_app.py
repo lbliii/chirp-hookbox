@@ -138,6 +138,10 @@ async def test_json_capture_masks_credentials_before_persistence(tmp_path: Path)
     assert "signature-secret" not in detail.text
     assert "trace-safe" in detail.text
     assert "source" in detail.text and "stripe" in detail.text
+    assert '<article class="detail-card">' in detail.text
+    assert "See every webhook" not in detail.text
+    assert "Private ingress URL" not in detail.text
+    assert 'id="dashboard"' not in detail.text
 
 
 @pytest.mark.parametrize(
