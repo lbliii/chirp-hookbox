@@ -42,6 +42,9 @@ curl -X POST http://127.0.0.1:8000/in/hookbox-local-ingress \
 
 ## Deploy on Railway
 
+[Deploy the Chirp Hookbox template](https://railway.com/deploy/chirp-hookbox)
+or inspect the [live demo](https://web-production-caa61.up.railway.app/).
+
 The Railway template intentionally creates only:
 
 - one Chirp web service pinned to one async worker;

@@ -23,7 +23,9 @@ Credential-shaped headers are masked before persistence, bodies are bounded to 1
 - Replacing temporary third-party request bins with a private deployment
 - Teaching server-rendered realtime patterns with Chirp and HTMX
 
-## Dependencies
+## Dependencies for Chirp Hookbox
+
+### Deployment Dependencies
 
 - A Chirp web service built from `lbliii/chirp-hookbox`
 - Railway PostgreSQL with a persistent volume
