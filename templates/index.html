@@ -76,7 +76,7 @@
         <input id="days" name="days" type="number" min="1" max="90" value="{{ retention_days }}">
         <span>days</span><button type="submit">Save retention</button>
       </form>
-      <form action="/admin/logout" method="post" hx-post="/admin/logout" hx-target="#dashboard" hx-swap="outerHTML">
+      <form action="/admin/logout" method="post">
         {{ csrf_field() }}<button type="submit">Lock inbox</button>
       </form>
     </div>
@@ -94,7 +94,7 @@
       <h1>Catch the signal.<br><em>Inspect the details.</em></h1>
       <p class="lede">A focused, self-hosted request bin with safe body inspection, masked secrets, and live arrivals.</p>
     </div>
-    <form class="unlock" action="/admin/login" method="post" hx-post="/admin/login" hx-target="body" hx-swap="innerHTML">
+    <form class="unlock" action="/admin/login" method="post">
       {{ csrf_field() }}
       <p class="section-kicker">Administrator access</p>
       <h2>Unlock your inbox</h2>

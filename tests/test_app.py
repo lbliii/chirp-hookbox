@@ -104,6 +104,19 @@ async def test_unlock_rejects_wrong_token_and_accepts_admin(tmp_path: Path) -> N
     assert 'sse-connect="/events"' in dashboard.text
 
 
+async def test_unlock_and_logout_forms_use_full_page_navigation(tmp_path: Path) -> None:
+    app = _application(tmp_path / "session-navigation.db")
+    async with TestClient(app) as client:
+        page = await client.get("/")
+        assert '<form class="unlock" action="/admin/login" method="post">' in page.text
+        assert 'action="/admin/login" method="post" hx-post' not in page.text
+        admin_cookie = await _unlock(client)
+        dashboard = await client.get("/", headers={"Cookie": admin_cookie})
+
+    assert '<form action="/admin/logout" method="post">' in dashboard.text
+    assert 'action="/admin/logout" method="post" hx-post' not in dashboard.text
+
+
 async def test_json_capture_masks_credentials_before_persistence(tmp_path: Path) -> None:
     app = _application(tmp_path / "json.db")
     async with TestClient(app) as client:

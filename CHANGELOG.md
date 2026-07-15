@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1 — 2026-07-15
+
+- Keep administrator unlock and lock navigation on the full-page redirect path so the ingress card and complete shell remain present.
+
 ## 0.1.0 — 2026-07-15
 
 - Ship the first Chirp Hookbox webhook inbox with PostgreSQL persistence.
